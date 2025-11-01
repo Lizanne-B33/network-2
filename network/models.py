@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-from django.db.models import Prefetch
 from django.db import models
 
 # extending the attributes and methods from the Abstract user into a custom User model.

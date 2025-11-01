@@ -6,10 +6,9 @@ indent = 4
 max_line_length = 120
 close_void_tags = true
 max_attribute_length = 100
-include = ["D001"]
-
-# Use a single string for exclusions to avoid the TypeError
+include = ["**/templates/**/*.html", "**/templates/**/*.djhtml"]
 exclude = "**/migrations/**,**/static/**,**/node_modules/**"
+ignore = "h014"
 
 # Use single strings for blank line settings
 blank_line_before_tag = "block, for, if, extends, include"

@@ -1,0 +1,18 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+    <h2>Add a Post</h2>
+
+    <form action="{% url 'add_post' %}" method="POST" enctype="multipart/form-data" class="flex-form">
+        <div class="form-group">
+            {% csrf_token %}
+            {{ form }}
+        </div>
+        <input type="submit" value="Add Post" />
+    </form>
+    <div>
+        <a href="{% url 'index' %}">Back to Home Page</a>
+    </div>
+
+{% endblock body %}

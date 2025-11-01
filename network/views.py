@@ -3,8 +3,12 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from .models import User, Post
+from .forms import (PostForm)
 
-from .models import User
+# ---------------------------------------------
+# User Login/Logout Functions
+# ---------------------------------------------
 
 
 def index(request):
@@ -61,3 +65,28 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+# ---------------------------------------------
+# Post Functions
+# ---------------------------------------------
+
+
+def add_post(request):
+    if request.method == 'POST':
+        # Bind user input to the form
+        form = PostForm(request.POST, request.FILES)
+        # Server-side Validation
+        print(request.FILES)
+        if form.is_valid():
+            my_title = form.cleaned_data['title']
+            my_body = form.cleaned_data['body']
+            # create the post object
+            new_post = Post(title=my_title,
+                            body=my_body,
+                            author=request.user,
+                            likes=0)
+            new_post.save()
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            # Blank form
+            form = PostForm()
+            return render(request, "network/add_post.html", {'form': form})

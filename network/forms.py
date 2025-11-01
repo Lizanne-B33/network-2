@@ -1,0 +1,34 @@
+from django import forms
+from django.forms import ModelForm
+from .models import User, Post
+
+# ------------------------------------
+# Model Forms
+# ------------------------------------
+
+
+class PostForm(ModelForm):
+    # defines metadata for AddPostForm
+    class Meta:
+        model = Post
+        fields = ['title', 'body']
+
+    # Customize Initialization of PostForm
+    def __init__(self, *args, **kwargs):
+        # call parent class (PostForm) __init__ method
+        super().__init__(*args, **kwargs)
+
+    # Updates the HTML attributes of the widget
+    # Adds a CSS class called "form-control" and
+    # sets a place holder Enter + field name.
+    # using Underscore as the variable bc the loop variable
+    # is not what is needed, only something to iterate.
+        for _, field in self.fields.items():
+            field.widget.attrs.update({
+                "class": "form-control",
+                "placeholder": f"Enter {field.label}"
+            })
+
+# ------------------------------------
+# Forms
+# ------------------------------------
