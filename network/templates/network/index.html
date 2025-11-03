@@ -1,2 +1,21 @@
 {% extends "network/layout.html" %}
-{% block body %}TODO{% endblock %}
+
+{% load static %}
+
+{% block body %}
+
+    {% if message %}<div>{{ message }}</div>{% endif %}
+
+    <div id="index-container">
+        <div id="welcome">
+            <h1 class welcome>Welcome</h1>
+            <p class welcome-p>Feel free to browse our posts.  Sign in for the full experience</p>
+        </div>
+        <div id="all-posts"></div>
+    </div>
+{% endblock body %}
+
+{% block script %}
+
+    <script src="{% static 'network/feed.js' %}"></script>
+{% endblock %}

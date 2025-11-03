@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.forms import ModelForm
 
 # extending the attributes and methods from the Abstract user into a custom User model.
 
@@ -9,6 +10,9 @@ class User(AbstractUser):
         "User", verbose_name=("following_users"), related_name="followings")
     followed_by = models.ManyToManyField(
         "User", verbose_name=("followed_by_users"), related_name="followers")
+
+    def get_id(self):
+        return self.get_id
 
     def get_followers(self):
         return self.followed_by.all()
@@ -30,7 +34,7 @@ class User(AbstractUser):
 # Class or Model definition for Posts.
 class Post(models.Model):
     title = models.CharField(max_length=200)
-    body = models.TextField
+    body = models.TextField(default="No text entered")
     create_date = models.DateTimeField(auto_now_add=True)
     likes = models.PositiveIntegerField(default=0)
     created_by = models.ForeignKey("User",
@@ -44,17 +48,19 @@ class Post(models.Model):
         verbose_name_plural = 'Posts'
 
     # Shows the title in Admin instead of object #
+
     def __str__(self):
         return self.title
 
     # gets a dictionary of key-value pairs of attributes in the object
     def serialize(self):
         return {
-            'id': self.id,
+            "id": self.id,
             "title": self.title,
             "body": self.body,
-            "create_date": self.create_date("%b %d %Y, %I:%M %p"),
-            "created_by": self.created_by,
+            "create_date": self.create_date.strftime("%b %d %Y, %I:%M %p"),
+            "created_by": self.created_by.username,
+            "created_by_id": self.created_by.id,
             "likes": self.likes
         }
 

@@ -1,17 +1,18 @@
 from django import forms
-from django.forms import ModelForm
-from .models import User, Post
+from .models import Post
 
 # ------------------------------------
 # Model Forms
 # ------------------------------------
 
+# Create form class named PostForm
 
-class PostForm(ModelForm):
+
+class PostForm(forms.ModelForm):
     # defines metadata for AddPostForm
     class Meta:
         model = Post
-        fields = ['title', 'body']
+        fields = ["title", "body"]
 
     # Customize Initialization of PostForm
     def __init__(self, *args, **kwargs):

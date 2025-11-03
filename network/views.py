@@ -1,7 +1,10 @@
+import json
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.http import JsonResponse
+from django.shortcuts import HttpResponse, HttpResponseRedirect, render, redirect
 from django.urls import reverse
 from .models import User, Post
 from .forms import (PostForm)
@@ -12,7 +15,13 @@ from .forms import (PostForm)
 
 
 def index(request):
-    return render(request, "network/index.html")
+    form = PostForm()
+    # Authenticated users view their their Posts and can enter a new post
+    if request.user.is_authenticated:
+        return render(request, "network/network_post.html", {'form': form})
+    # Everyone else can see the existing posts, and invited to register/sign in.
+    else:
+        return render(request, "network/index.html")
 
 
 def login_view(request):
@@ -70,10 +79,12 @@ def register(request):
 # ---------------------------------------------
 
 
+@csrf_exempt
+@login_required
 def add_post(request):
     if request.method == 'POST':
         # Bind user input to the form
-        form = PostForm(request.POST, request.FILES)
+        form = PostForm(request.POST)
         # Server-side Validation
         print(request.FILES)
         if form.is_valid():
@@ -82,11 +93,17 @@ def add_post(request):
             # create the post object
             new_post = Post(title=my_title,
                             body=my_body,
-                            author=request.user,
+                            created_by=request.user,
                             likes=0)
             new_post.save()
             return HttpResponseRedirect(reverse('index'))
-        else:
-            # Blank form
-            form = PostForm()
-            return render(request, "network/add_post.html", {'form': form})
+    else:
+        form = PostForm()
+        print(form)
+    return render(request, "network/index.html", {'form': form})
+
+
+def feed(request):
+    posts = Post.objects
+    posts = posts.order_by("created_by", "-create_date").all()
+    return JsonResponse([post.serialize() for post in posts], safe=False)
