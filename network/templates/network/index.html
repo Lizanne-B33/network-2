@@ -12,10 +12,23 @@
             <p class welcome-p>Feel free to browse our posts.  Sign in for the full experience</p>
         </div>
         <div id="all-posts"></div>
-    </div>
-{% endblock body %}
+        <div id="profile">
+            <div class:'row'>
+                <div class: "col-4">
+                    <div class: 'row'>
+                        <div class 'col-12'>
+                            <img id:"profile_img" />
+                            <div class 'col-12'>
+                                <h5 id: 'profile_name'></h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock body %}
 
-{% block script %}
+    {% block script %}
 
-    <script src="{% static 'network/feed.js' %}"></script>
-{% endblock %}
+        <script src="{% static 'network/feed.js' %}"></script>
+    {% endblock %}

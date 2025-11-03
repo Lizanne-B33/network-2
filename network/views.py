@@ -107,3 +107,21 @@ def feed(request):
     posts = Post.objects
     posts = posts.order_by("created_by", "-create_date").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
+
+
+def profiles(request):
+    members = User.objects
+    members = User.order_by("username").all()
+    return JsonResponse([User.serialize() for member in members], safe=False)
+
+
+def single_profile(request, member_id):
+    # Query for requested User
+    try:
+        member = User.objects.get(member_id)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "Profile not found."}, status=404)
+
+    # Return User contents
+    if request.method == "GET":
+        return JsonResponse(member.serialize())

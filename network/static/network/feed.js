@@ -25,8 +25,6 @@ function format_feed(posts) {
     // loop through each post and render the author and their posts.
     posts.forEach((post) => {
         my_author = post.created_by_id
-        console.log(my_author)
-        console.log(author)
 
         if (author != my_author) {
             author = my_author
@@ -88,4 +86,34 @@ function format_feed(posts) {
             })
         })
     })
+}
+
+function load_profile(id) {
+    // variables
+
+    // Get profile
+    fetch(`/api/single_profile/${id}`)
+        .then(response => response.json())
+        .then(member => {
+            // send to format the list
+            show_profile(member)
+        })
+}
+function show_profile(member) {
+
+    document.getElementById('profile_img').src = member.profile_pic
+    document.getElementById('profile_name').textContent = member.username
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

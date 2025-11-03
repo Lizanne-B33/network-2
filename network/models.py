@@ -10,6 +10,23 @@ class User(AbstractUser):
         "User", verbose_name=("following_users"), related_name="followings")
     followed_by = models.ManyToManyField(
         "User", verbose_name=("followed_by_users"), related_name="followers")
+    bio = models.TextField(null=True)
+    image = models.ImageField(upload_to=None,
+                              height_field=None,
+                              width_field=None,
+                              max_length=100,
+                              null=True)
+    joinDate = models.DateTimeField(auto_now_add=True, null=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "start_date": self.date_joined.strftime("%b %d %Y, %I:%M %p"),
+            "bio": self.bio,
+            "profile_pic": self.image
+        }
 
     def get_id(self):
         return self.get_id
@@ -34,7 +51,7 @@ class User(AbstractUser):
 # Class or Model definition for Posts.
 class Post(models.Model):
     title = models.CharField(max_length=200)
-    body = models.TextField(default="No text entered")
+    body = models.TextField(null=True)
     create_date = models.DateTimeField(auto_now_add=True)
     likes = models.PositiveIntegerField(default=0)
     created_by = models.ForeignKey("User",
