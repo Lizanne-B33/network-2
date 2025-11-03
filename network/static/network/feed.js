@@ -42,7 +42,9 @@ function format_feed(posts) {
 
             aHeading = document.createElement('h5')
             aCDiv.appendChild(aHeading)
-            aHeading.textContent = post.created_by
+            s1 = post.created_by
+            s2 = s1.charAt(0).toUpperCase() + s1.slice(1);
+            aHeading.textContent = s2 + "'s Posts"
 
             //To Do
             //rowDiv.addEventListener('click', function () {
