@@ -8,27 +8,37 @@
 
     <div id="index-container">
         <div id="welcome">
-            <h1 class welcome>Welcome</h1>
-            <p class welcome-p>Feel free to browse our posts.  Sign in for the full experience</p>
+            <h1 id="welcome-h"></h1>
+            <p id="welcome-p"></p>
         </div>
         <div id="all-posts"></div>
         <div id="profile">
-            <div class:'row'>
-                <div class: "col-4">
-                    <div class: 'row'>
-                        <div class 'col-12'>
-                            <img id:"profile_img" />
-                            <div class 'col-12'>
-                                <h5 id: 'profile_name'></h5>
-                            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-12">
+                            <img id="profile_img" class="img-fluid mx-auto d-block" alt="profile image" />
+                            <h5 id="profile_name"></h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="row">
+                        <div class="col-8">
+                            <p id="bio"></p>
+                        </div>
+                        <div class="col-4">
+                            <p id="following"></p>
+                            <p id="followed_by"></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    {% endblock body %}
+    </div>
+{% endblock body %}
 
-    {% block script %}
+{% block script %}
 
-        <script src="{% static 'network/feed.js' %}"></script>
-    {% endblock %}
+    <script src="{% static 'network/feed.js' %}"></script>
+{% endblock %}

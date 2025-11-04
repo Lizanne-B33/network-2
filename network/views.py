@@ -18,7 +18,7 @@ def index(request):
     form = PostForm()
     # Authenticated users view their their Posts and can enter a new post
     if request.user.is_authenticated:
-        return render(request, "network/network_post.html", {'form': form})
+        return render(request, "network/post_feed.html", {'form': form})
     # Everyone else can see the existing posts, and invited to register/sign in.
     else:
         return render(request, "network/index.html")
@@ -115,10 +115,10 @@ def profiles(request):
     return JsonResponse([User.serialize() for member in members], safe=False)
 
 
-def single_profile(request, member_id):
+def single_profile(request, id):
     # Query for requested User
     try:
-        member = User.objects.get(member_id)
+        member = User.objects.get(id=id)
     except User.DoesNotExist:
         return JsonResponse({"error": "Profile not found."}, status=404)
 

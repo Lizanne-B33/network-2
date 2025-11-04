@@ -11,7 +11,7 @@ class User(AbstractUser):
     followed_by = models.ManyToManyField(
         "User", verbose_name=("followed_by_users"), related_name="followers")
     bio = models.TextField(null=True)
-    image = models.ImageField(upload_to=None,
+    image = models.ImageField(upload_to='profile_pics',
                               height_field=None,
                               width_field=None,
                               max_length=100,
@@ -25,7 +25,9 @@ class User(AbstractUser):
             "email": self.email,
             "start_date": self.date_joined.strftime("%b %d %Y, %I:%M %p"),
             "bio": self.bio,
-            "profile_pic": self.image
+            "profile_pic": self.image.url,
+            "followers": self.count_followers(),
+            "following": self.count_following()
         }
 
     def get_id(self):

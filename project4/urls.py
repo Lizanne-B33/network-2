@@ -12,11 +12,23 @@ Class-based views
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+    
+In Django, the MEDIA_ROOT and MEDIA_URL settings are used to manage media files like images. 
+You can add these settings to your settings.py file. 
+    MEDIA_ROOT is the directory where uploaded files are stored, and 
+    MEDIA_URL is the URL that serves the media files. 
 """
+# help from duck to make changes for media management.
 from django.contrib import admin
 from django.urls import include, path
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("network.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
