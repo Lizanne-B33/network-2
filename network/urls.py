@@ -1,6 +1,6 @@
 
 from django.urls import path
-
+import network.views as views
 from . import views
 
 urlpatterns = [
@@ -13,5 +13,6 @@ urlpatterns = [
     # API Routes
     path("api/feed", views.feed, name="api_feed"),
     path("api/single_profile/<id>", views.single_profile, name="single_profile"),
-    path("posts/<str:created_by>", views.feed, name="filtered_posts")
+    path("api/single_feed/<str:created_by>",
+         views.single_feed, name="api_single_feed"),
 ]

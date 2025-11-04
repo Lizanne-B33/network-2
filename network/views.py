@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 from django.http import JsonResponse
-from django.shortcuts import HttpResponse, HttpResponseRedirect, render, redirect
+from django.shortcuts import HttpResponse, HttpResponseRedirect, render, redirect, get_object_or_404
 from django.urls import reverse
 from .models import User, Post
 from .forms import (PostForm)
@@ -108,6 +108,15 @@ def feed(request):
     posts = posts.order_by("created_by", "-create_date").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
 
+# since created by is a FK, I need to look up the User object by user name then filter by the user.
+
+
+def single_feed(request, created_by):
+    user = get_object_or_404(User, username=created_by)
+    posts = Post.objects.filter(created_by=user)
+    posts = posts.order_by("create_date").all()
+    return JsonResponse([post.serialize() for post in posts], safe=False)
+
 
 def profiles(request):
     members = User.objects
@@ -125,3 +134,15 @@ def single_profile(request, id):
     # Return User contents
     if request.method == "GET":
         return JsonResponse(member.serialize())
+
+
+def single_post(request, id):
+    # Query for requested Post
+    try:
+        post = Post.objects.get(id=id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    # Return Post contents
+    if request.method == "GET":
+        return JsonResponse(post.serialize())

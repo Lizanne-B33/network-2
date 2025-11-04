@@ -6,30 +6,58 @@
 
     {% if message %}<div>{{ message }}</div>{% endif %}
 
-    <div id="index-container">
+    <div id="index-container" class="container">
         <div id="welcome">
             <h1 id="welcome-h"></h1>
             <p id="welcome-p"></p>
         </div>
         <div id="all-posts"></div>
         <div id="profile">
-            <div class="row">
+            <div class="row" id="profile_detail">
                 <div class="col-4">
                     <div class="row">
                         <div class="col-12">
                             <img id="profile_img" class="img-fluid mx-auto d-block" alt="profile image" />
-                            <h5 id="profile_name"></h5>
                         </div>
                     </div>
                 </div>
                 <div class="col-8">
                     <div class="row">
                         <div class="col-8">
+                            <h3 id="profile_name"></h3>
+                            <p class="font-italic font-weight-light" id="start_date"></p>
+                            <hr />
+                            <br />
                             <p id="bio"></p>
                         </div>
                         <div class="col-4">
                             <p id="following"></p>
                             <p id="followed_by"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="profile_posts"></div>
+        <div id="single_post">
+            <div class="row">
+                <div class="col-2"></div>
+                <div id="post_background" class="col-8">
+                    <div class="header, row">
+                        <h3 class="logo, col-12">"Wondergram"</h3>
+                        <hr />
+                        <br />
+                    </div>
+                    <div class="sender, row">
+                        <img class="sender_img, col" src= TBD />
+                        <p class="sender_name, col" id="post_sender"></p>
+                    </div>
+                    <div class="body_background, row">
+                        <div class="post_text, col-12"></div>
+                    </div>
+                    <div class="footer_background, row">
+                        <div class="like_buttons, col-12">
+                            <!-- buttons go here -->
                         </div>
                     </div>
                 </div>
