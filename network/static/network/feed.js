@@ -24,7 +24,7 @@ function load_single_feed(username) {
         .then(response => response.json())
         .then(posts => {
             // send to format the list
-            format_feed(posts, "#profile_posts")
+            format_feed(posts, "#profile-posts")
         })
 }
 function format_feed(posts, divStructure) {
@@ -49,7 +49,7 @@ function format_feed(posts, divStructure) {
             aDiv = document.createElement('div')
             startDiv.appendChild(aDiv)
             aDiv.setAttribute('id', id_code + my_author)
-            aDiv.classList.add('row', 'profile_listener')
+            aDiv.classList.add('row', 'profile-listener')
 
             aCDiv = document.createElement('div')
             aDiv.appendChild(aCDiv)
@@ -97,10 +97,10 @@ function format_feed(posts, divStructure) {
             colDiv = document.createElement('div')
             pDiv.appendChild(colDiv)
             colDiv.setAttribute('id', id_code + post.id + '-' + (colIndex + 1))
-            colDiv.classList.add(colClass, colStyle, colAlign)
+            colDiv.classList.add('post-listener')
             colDiv.textContent = text
             colDiv.addEventListener('click', function () {
-                load_post(post.id)
+                load_single_post(post.id)
             })
         })
     })
@@ -127,12 +127,12 @@ function format_profile(member) {
     document.getElementById("welcome-h").textContent = "Writer Profile"
     document.getElementById("welcome-p").textContent = "This is a public writer profile. Here, you can learn more about the author, explore their bio, and discover the posts they've shared with the community. Feel free to browse and get inspired by their work. To unlock full features like creating posts, liking content, and joining the conversation, consider signing in or becoming a member."
 
-    document.getElementById('profile_img').src = member.profile_pic
-    document.getElementById('profile_name').textContent = s2
-    document.getElementById('start_date').textContent = "Member since " + member.start_date
+    document.getElementById('profile-img').src = member.profile_pic
+    document.getElementById('profile-name').textContent = s2
+    document.getElementById('start-date').textContent = "Member since " + member.start_date
     document.getElementById('bio').textContent = member.bio
-    document.getElementById('following').textContent = "Followed by: " + member.followers
-    document.getElementById('followed_by').textContent = "Following: " + member.following
+    document.getElementById('following').textContent = "Following: " + member.followers
+    document.getElementById('followed-by').textContent = "Followed by: " + member.following
     load_single_feed(member.username)
 }
 
@@ -141,25 +141,39 @@ function load_single_post(id) {
     // Get Posts
     fetch(`/api/single_post/${id}`)
         .then(response => response.json())
-        .then(posts => {
+        .then(post => {
             // send to format the list
-            format_single_post(posts, "#single_posts")
+            format_single_post(post)
         })
 }
 function format_single_post(post) {
-
-
+    show_single_post_view()
+    document.getElementById('sender-img').src = post.profile_pic
+    document.getElementById('post-sender').textContent = post.created_by
+    document.getElementById('post-date').textContent = 'Originally posted on: ' + post.create_date
+    document.getElementById('post-text').textContent = post.body
+    document.getElementById('post-likes').textContent = 'Number of likes: ' + post.likes
 }
 
 // --------------------------- Helper Functions -------------------------//
 function show_all_posts_view() {
+    document.querySelector('#welcome').style.display = "block"
     document.querySelector('#all-posts').style.display = 'block'
     document.querySelector('#profile').style.display = 'none'
-    document.querySelector('#profile_posts').style.display = 'none'
+    document.querySelector('#profile-posts').style.display = 'none'
+    document.querySelector('#single-post').style.display = 'none'
 }
-
 function show_profile_view() {
+    document.querySelector('#welcome').style.display = "block"
     document.querySelector('#all-posts').style.display = 'none'
-    document.querySelector('#profile_posts').style.display = 'block'
+    document.querySelector('#profile-posts').style.display = 'block'
     document.querySelector('#profile').style.display = 'block'
+    document.querySelector('#single-post').style.display = 'none'
+}
+function show_single_post_view() {
+    document.querySelector('#welcome').style.display = "none"
+    document.querySelector('#all-posts').style.display = 'none'
+    document.querySelector('#profile-posts').style.display = 'none'
+    document.querySelector('#profile').style.display = 'none'
+    document.querySelector('#single-post').style.display = 'block'
 }

@@ -15,4 +15,5 @@ urlpatterns = [
     path("api/single_profile/<id>", views.single_profile, name="single_profile"),
     path("api/single_feed/<str:created_by>",
          views.single_feed, name="api_single_feed"),
+    path("api/single_post/<id>", views.single_post, name="api_single_post"),
 ]

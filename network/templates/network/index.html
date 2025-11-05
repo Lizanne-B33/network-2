@@ -7,66 +7,109 @@
     {% if message %}<div>{{ message }}</div>{% endif %}
 
     <div id="index-container" class="container">
+
+
         <div id="welcome">
+            <!--used to hide or show sections-->
             <h1 id="welcome-h"></h1>
             <p id="welcome-p"></p>
+            <hr />
         </div>
+
+
         <div id="all-posts"></div>
+        <!--used to hide or show sections-->
+
+
         <div id="profile">
-            <div class="row" id="profile_detail">
-                <div class="col-4">
+            <!--used to hide or show sections-->
+
+            <div class="row">
+                <div class="col-lg-4">
                     <div class="row">
                         <div class="col-12">
-                            <img id="profile_img" class="img-fluid mx-auto d-block" alt="profile image" />
+                            <img id="profile-img" class="img-fluid mx-auto d-block" alt="profile image" />
                         </div>
                     </div>
                 </div>
-                <div class="col-8">
+
+                <div class="col-lg-8">
                     <div class="row">
-                        <div class="col-8">
-                            <h3 id="profile_name"></h3>
-                            <p class="font-italic font-weight-light" id="start_date"></p>
+
+                        <div class="col">
+                            <h3 id="profile-name"></h3>
+                            <p class="font-italic font-weight-light" id="start-date"></p>
                             <hr />
                             <br />
                             <p id="bio"></p>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-4 following">
+                                    <p id="following"></p>
+                                </div>
+                                <div class="col-lg-4 following">
+                                    <p id="followed-by"></p>
+                                </div>
+                            </div>
+
                         </div>
-                        <div class="col-4">
-                            <p id="following"></p>
-                            <p id="followed_by"></p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="profile-posts"></div>
+            <!--used to hide or show sections-->
+
+            <div id="single-post">
+                <!--used to hide or show sections-->
+                <div class="row">
+                    <div class="col-2"></div>
+                    <!--Used for creating space-->
+
+                    <div id="post-background" class="col-8">
+                        <!--used in CSS-->
+                        <div class="row">
+                            <div class="col-12">
+                                <h3 id="post-logo-style">Wondergram</h3>
+                                <!--used in CSS-->
+                                <hr />
+                                <br />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!--Header-->
+                            <div col-4>
+                                <img id="sender-img" />
+                            </div>
+
+                            <div col-8>
+                                <p class="text-capitalize" id="post-sender"></p>
+                                <p class="font-italic font-weight-light" id="post-date"></p>
+                            </div>
+                        </div>
+
+                        <div id="body-background" class="row">
+                            <!--For CSS- body-->
+                            <div id="post-text" class="col-12"></div>
+                        </div>
+
+                        <div class="row">
+                            <!--footer-->
+                            <div class="col-4">
+                                <!--button logic goes here -->
+                            </div>
+                            <div class="col-8">
+                                <p id="post-likes"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="profile_posts"></div>
-        <div id="single_post">
-            <div class="row">
-                <div class="col-2"></div>
-                <div id="post_background" class="col-8">
-                    <div class="header, row">
-                        <h3 class="logo, col-12">"Wondergram"</h3>
-                        <hr />
-                        <br />
-                    </div>
-                    <div class="sender, row">
-                        <img class="sender_img, col" src= TBD />
-                        <p class="sender_name, col" id="post_sender"></p>
-                    </div>
-                    <div class="body_background, row">
-                        <div class="post_text, col-12"></div>
-                    </div>
-                    <div class="footer_background, row">
-                        <div class="like_buttons, col-12">
-                            <!-- buttons go here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock body %}
+    {% endblock body %}
 
-{% block script %}
+    {% block script %}
 
-    <script src="{% static 'network/feed.js' %}"></script>
-{% endblock %}
+        <script src="{% static 'network/feed.js' %}"></script>
+    {% endblock script %}

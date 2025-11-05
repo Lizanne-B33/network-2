@@ -80,7 +80,8 @@ class Post(models.Model):
             "create_date": self.create_date.strftime("%b %d %Y, %I:%M %p"),
             "created_by": self.created_by.username,
             "created_by_id": self.created_by.id,
-            "likes": self.likes
+            "likes": self.likes,
+            "profile_pic": self.created_by.image.url
         }
 
     # gets an array of post objects by the user
