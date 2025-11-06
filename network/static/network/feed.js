@@ -1,11 +1,16 @@
 // Global Variables
 
+
 document.addEventListener('DOMContentLoaded', function () {
-    // By default, load the all posts feed
-    load_feed()
-})
+    load_feed();
+    console.log(memberName)
+    if (memberName) {
+        load_member_feed(memberName);
+    }
+});
 
 function load_feed() {
+    console.log(memberName)
     // variables
     // set views
     show_all_posts_view()
@@ -24,7 +29,29 @@ function load_single_feed(username) {
         .then(response => response.json())
         .then(posts => {
             // send to format the list
-            format_feed(posts, "#profile-posts")
+            if (Array.isArray(posts)) {
+                format_feed(posts, "#profile-posts")
+            }
+            else { document.getElementById('no-posts-msg').textContent = posts.text }
+
+        })
+}
+function load_member_feed(memberName) {
+    // variables
+    username = memberName
+    console.log(username)
+    // set views: 
+    show_member_post_view()
+    // Get Posts
+
+    fetch(`/api/single_feed/${username}`)
+        .then(response => response.json())
+        .then(posts => {
+            if (Array.isArray(posts)) {
+                // send to format the list
+                format_feed(posts, "#member-post-list")
+            }
+            else { document.getElementById('no-posts-msg').textContent = posts.text }
         })
 }
 function format_feed(posts, divStructure) {
@@ -33,11 +60,19 @@ function format_feed(posts, divStructure) {
     author = ""
     console.log(startDiv)
     id_code = "s_"
-    // Update Welcome
+
+    // Update Welcome (profile-posts does not include a welcome message)
     if (divStructure === "#all-posts") {
         document.getElementById("welcome-h").textContent = "Welcome to Our Community"
-        document.getElementById("welcome-p").textContent = "Welcome! Feel free to browse our latest posts and explore what our writers have to share. To enjoy the full experience, including personalized features and member-only content, please sign in. You can click on any writer’s name to view their bio, or select a post title to read the full article. We’d love for you to join our group—members can create posts, like content, and connect with others in the community."
+        document.getElementById("welcome-p").textContent = "Feel free to browse our latest posts and explore what our writers have to share. To enjoy the full experience, including personalized features and member-only content, please sign in. You can click on any writer’s name to view their bio, or select a post title to read the full article. We’d love for you to join our group—members can create posts, like content, and connect with others in the community."
         id_code = "a_"
+    }
+
+    if (divStructure === "#member-post-list") {
+        // Welcome for logged in users.
+        document.getElementById("welcome-h").textContent = "Welcome "
+        document.getElementById("welcome-p").textContent = "You can add a new post or view your existing posts by clicking on any post in the list."
+        id_code = "m_"
     }
     // loop through each post and render the author and their posts.
     posts.forEach((post) => {
@@ -80,24 +115,24 @@ function format_feed(posts, divStructure) {
             switch (colIndex) {
                 case 0:
                     text = post.title
-                    colStyle = 'colTitle'
+                    colStyle = 'col-title'
                     colAlign = 'text-left'
                     break
                 case 1:
                     text = post.create_date
-                    colStyle = 'colDate'
+                    colStyle = 'col-date'
                     colAlign = 'text-left'
                     break
                 case 2:
                     text = String.fromCodePoint(0x2764) + " " + post.likes
-                    colStyle = 'colTimestamp'
+                    colStyle = 'col-Timestamp'
                     colAlign = 'text-right'
             }
             // build the columns
             colDiv = document.createElement('div')
             pDiv.appendChild(colDiv)
             colDiv.setAttribute('id', id_code + post.id + '-' + (colIndex + 1))
-            colDiv.classList.add('post-listener', colClass, colAlign)
+            colDiv.classList.add('post-listener', colClass, colAlign, colStyle)
             colDiv.textContent = text
             colDiv.addEventListener('click', function () {
                 load_single_post(post.id)
@@ -135,7 +170,6 @@ function format_profile(member) {
     document.getElementById('followed-by').textContent = "Followed by: " + member.following
     load_single_feed(member.username)
 }
-
 function load_single_post(id) {
     // variables
     // Get Posts
@@ -155,6 +189,7 @@ function format_single_post(post) {
     document.getElementById('post-likes').textContent = 'Number of likes: ' + post.likes
 }
 
+
 // --------------------------- Helper Functions -------------------------//
 function show_all_posts_view() {
     document.querySelector('#welcome').style.display = "block"
@@ -162,6 +197,7 @@ function show_all_posts_view() {
     document.querySelector('#profile').style.display = 'none'
     document.querySelector('#profile-posts').style.display = 'none'
     document.querySelector('#single-post').style.display = 'none'
+    document.querySelector('#member-posts').style.display = 'none'
 }
 function show_profile_view() {
     document.querySelector('#welcome').style.display = "block"
@@ -169,6 +205,7 @@ function show_profile_view() {
     document.querySelector('#profile-posts').style.display = 'block'
     document.querySelector('#profile').style.display = 'block'
     document.querySelector('#single-post').style.display = 'none'
+    document.querySelector('#member-posts').style.display = 'none'
 }
 function show_single_post_view() {
     document.querySelector('#welcome').style.display = "none"
@@ -176,4 +213,14 @@ function show_single_post_view() {
     document.querySelector('#profile-posts').style.display = 'none'
     document.querySelector('#profile').style.display = 'none'
     document.querySelector('#single-post').style.display = 'block'
+    document.querySelector('#member-posts').style.display = 'none'
+}
+
+function show_member_post_view() {
+    document.querySelector('#welcome').style.display = "block"
+    document.querySelector('#all-posts').style.display = 'none'
+    document.querySelector('#profile-posts').style.display = 'none'
+    document.querySelector('#profile').style.display = 'none'
+    document.querySelector('#single-post').style.display = 'none'
+    document.querySelector('#member-posts').style.display = 'block'
 }

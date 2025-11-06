@@ -16,9 +16,11 @@ from .forms import (PostForm)
 
 def index(request):
     form = PostForm()
+    memberName = ""
     # Authenticated users view their their Posts and can enter a new post
     if request.user.is_authenticated:
-        return render(request, "network/post_feed.html", {'form': form})
+        memberName = request.user.username
+        return render(request, "network/index.html", {'form': form, 'memberName': memberName})
     # Everyone else can see the existing posts, and invited to register/sign in.
     else:
         return render(request, "network/index.html")
@@ -46,6 +48,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
+    username = ""
     return HttpResponseRedirect(reverse("index"))
 
 
@@ -114,8 +117,11 @@ def feed(request):
 def single_feed(request, created_by):
     user = get_object_or_404(User, username=created_by)
     posts = Post.objects.filter(created_by=user)
-    posts = posts.order_by("create_date").all()
-    return JsonResponse([post.serialize() for post in posts], safe=False)
+    if posts:
+        posts = posts.order_by("create_date").all()
+        return JsonResponse([post.serialize() for post in posts], safe=False)
+    else:
+        return JsonResponse({"text": "You don't have any posts yet."})
 
 
 def profiles(request):

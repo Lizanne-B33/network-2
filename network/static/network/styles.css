@@ -49,3 +49,8 @@
 #like-buttons {
   text-align: center;
 }
+
+.col-date {
+  font-style: italic;
+  font-weight: 300;
+}

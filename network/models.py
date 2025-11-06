@@ -77,7 +77,7 @@ class Post(models.Model):
             "id": self.id,
             "title": self.title,
             "body": self.body,
-            "create_date": self.create_date.strftime("%b %d %Y, %I:%M %p"),
+            "create_date": self.create_date.strftime("%m/%d/%Y"),
             "created_by": self.created_by.username,
             "created_by_id": self.created_by.id,
             "likes": self.likes,
