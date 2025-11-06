@@ -56,60 +56,61 @@
                     </div>
                 </div>
             </div>
+        </div>
 
 
-            <div id="profile-posts"></div>
+        <div id="profile-posts"></div>
+        <!--used to hide or show sections-->
+
+        <div id="single-post">
             <!--used to hide or show sections-->
+            <div class="row">
+                <div class="col-2"></div>
+                <!--Used for creating space-->
 
-            <div id="single-post">
-                <!--used to hide or show sections-->
-                <div class="row">
-                    <div class="col-2"></div>
-                    <!--Used for creating space-->
-
-                    <div id="post-background" class="col-8">
-                        <!--used in CSS-->
-                        <div class="row">
-                            <div class="col-12">
-                                <h3 id="post-logo-style">Wondergram</h3>
-                                <!--used in CSS-->
-                                <hr />
-                                <br />
-                            </div>
+                <div id="post-background" class="col-8">
+                    <!--used in CSS-->
+                    <div class="row">
+                        <div class="col-12">
+                            <h3 id="post-logo-style">Wondergram</h3>
+                            <!--used in CSS-->
+                            <hr />
+                            <br />
                         </div>
-                        <div class="row">
-                            <!--Header-->
-                            <div col-4>
-                                <img id="sender-img" />
-                            </div>
-
-                            <div col-8>
-                                <p class="text-capitalize" id="post-sender"></p>
-                                <p class="font-italic font-weight-light" id="post-date"></p>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <!--Header-->
+                        <div col-4>
+                            <img id="sender-img" />
                         </div>
 
-                        <div id="body-background" class="row">
-                            <!--For CSS- body-->
-                            <div id="post-text" class="col-12"></div>
+                        <div col-8>
+                            <p class="text-capitalize" id="post-sender"></p>
+                            <p class="font-italic font-weight-light" id="post-date"></p>
                         </div>
+                    </div>
 
-                        <div class="row">
-                            <!--footer-->
-                            <div class="col-4">
-                                <!--button logic goes here -->
-                            </div>
-                            <div class="col-8">
-                                <p id="post-likes"></p>
-                            </div>
+                    <div id="body-background" class="row">
+                        <!--For CSS- body-->
+                        <div id="post-text" class="col-12"></div>
+                    </div>
+
+                    <div class="row">
+                        <!--footer-->
+                        <div class="col-4">
+                            <!--button logic goes here -->
+                        </div>
+                        <div class="col-8">
+                            <p id="post-likes"></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    {% endblock body %}
+    </div>
+{% endblock body %}
 
-    {% block script %}
+{% block script %}
 
-        <script src="{% static 'network/feed.js' %}"></script>
-    {% endblock script %}
+    <script src="{% static 'network/feed.js' %}"></script>
+{% endblock script %}

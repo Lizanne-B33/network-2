@@ -97,7 +97,7 @@ function format_feed(posts, divStructure) {
             colDiv = document.createElement('div')
             pDiv.appendChild(colDiv)
             colDiv.setAttribute('id', id_code + post.id + '-' + (colIndex + 1))
-            colDiv.classList.add('post-listener')
+            colDiv.classList.add('post-listener', colClass, colAlign)
             colDiv.textContent = text
             colDiv.addEventListener('click', function () {
                 load_single_post(post.id)
