@@ -20,8 +20,10 @@ urlpatterns = [
     path("api/single_post/<id>", views.single_post, name="api_single_post"),
     path("api/check_like_status/<int:id>",
          views.check_like_status, name="check_like_status"),
-    path("api/update_like/<int:id>", views.update_like, name="update_like"),
-    path("api/update_unlike/<int:id>", views.update_unlike, name="update_unlike"),
+    path("api/update_likes/<int:id>", views.update_likes, name="update_likes"),
+    path("api/update_unlikes/<int:id>",
+         views.update_unlikes, name="update_unlikes"),
+    path("api/count_likes/<int:id>", views.count_likes, name="count_likes"),
 
 ]
 # Image files

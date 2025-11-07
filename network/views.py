@@ -124,20 +124,31 @@ def check_like_status(request, id):
     return JsonResponse({'liked': liked})
 
 
-def update_like(request, id):
+def update_likes(request, id):
+    print('update has been called')
     post = get_object_or_404(Post, id=id)
+    print('Post ID' + str(id))
+    print('user ID' + str(request.user))
     post.member_likes.add(request.user)
     post.save()
     post.like()
+    count_likes(id)
     return HttpResponseRedirect(reverse('index'))
 
 
-def update_unlike(request, id):
+def update_unlikes(request, id):
     post = get_object_or_404(Post, id=id)
     post.member_likes.remove(request.user)
     post.save()
-    post.like()
+    post.unlike()
+    count_likes(id)
     return HttpResponseRedirect(reverse('index'))
+
+
+def count_likes(request, id):
+    post = get_object_or_404(Post, id=id)
+    count = post.member_likes
+    return JsonResponse({'count': count})
 
 
 # ---------------------------------------------------------------

@@ -257,12 +257,26 @@ function checkLikeStatus(id) {
 
 function get_post_for_likes() {
   id = document.getElementById('like-me').data_id
-  update_likes(id)
+  console.log('button data-id' + id)
+  fetch(`/api/update_likes/${id}`)
+  get_new_count()
 }
+
 function get_post_for_unlikes() {
   id = document.getElementById('unlike-me').data_id
-  update_likes(id)
+  fetch(`/api/update_unlikes/${id}`)
 }
+
+function get_new_count() {
+  const id = document.getElementById('like-me').dataset.id
+  fetch(`api/count_likes/${id}`)
+    .then(response => response.json())
+    .then(count => {
+      document.getElementById('post-likes').textContent =
+        'Number of likes: ' + count
+    })
+}
+
 // --------------------------- Helper Functions -------------------------//
 function show_all_posts_view() {
   document.querySelector('#welcome').style.display = 'block'
