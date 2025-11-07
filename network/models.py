@@ -60,6 +60,7 @@ class Post(models.Model):
                                    on_delete=models.CASCADE,
                                    related_name="posts",
                                    related_query_name="post",)
+    member_likes = models.ManyToManyField(User, related_name="post_likes")
 
     class Meta:
         ordering = ('-create_date',)

@@ -18,12 +18,6 @@ ENV/
 pip-wheel-metadata/
 
 # Django
-db.sqlite3
-*.sqlite3
-*.db
-*.db-journal
-media/
-staticfiles/
 local_settings.py
 settings_local.py
 

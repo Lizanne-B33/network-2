@@ -77,14 +77,17 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
-# ---------------------------------------------
-# Post Functions
-# ---------------------------------------------
+
+# ---------------------------------------------------------------
+# A logged in user (member of the Social Network) can
+# Add new posts, # Edit their own posts, and like anyone's posts.
+# ---------------------------------------------------------------
 
 
 @csrf_exempt
 @login_required
 def add_post(request):
+    # Add Post: Sets up the Form Model for a new post
     if request.method == 'POST':
         # Bind user input to the form
         form = PostForm(request.POST)
@@ -105,32 +108,60 @@ def add_post(request):
         print(form)
     return render(request, "network/index.html", {'form': form})
 
+# Edit Post: uses an Edit Button that is only displayed if the
+# Member is viewing their own post.  This edit button enables
+# the member to modify and save their own post.
 
+# EDIT TODO
+
+# Like toggle: any logged in user can like or unlike a post
+# LIKE TODO
+
+
+def check_like_status(request, id):
+    post = Post.objects.get(id=id)
+    liked = request.user in post.member_likes.all()
+    return JsonResponse({'liked': liked})
+
+
+def update_like(request, id):
+    post = get_object_or_404(Post, id=id)
+    post.member_likes.add(request.user)
+    post.save()
+    post.like()
+    return HttpResponseRedirect(reverse('index'))
+
+
+def update_unlike(request, id):
+    post = get_object_or_404(Post, id=id)
+    post.member_likes.remove(request.user)
+    post.save()
+    post.like()
+    return HttpResponseRedirect(reverse('index'))
+
+
+# ---------------------------------------------------------------
+# Any user (logged in or not) can view all posts
+# Must be in chronological order.  Most recent first.
+# I added a grouping by author.
+# I intentionally added only the title to be displayed on the list
+# I added a nice view of the full post that mimics a social media post.
+# This view is accessed when the user clicks on the post title.
+# ---------------------------------------------------------------
 def feed(request):
     posts = Post.objects
     posts = posts.order_by("created_by", "-create_date").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
 
-# since created by is a FK, I need to look up the User object by user name then filter by the user.
 
-
-def single_feed(request, created_by):
-    user = get_object_or_404(User, username=created_by)
-    posts = Post.objects.filter(created_by=user)
-    if posts:
-        posts = posts.order_by("create_date").all()
-        return JsonResponse([post.serialize() for post in posts], safe=False)
-    else:
-        return JsonResponse({"text": "You don't have any posts yet."})
-
-
-def profiles(request):
-    members = User.objects
-    members = User.order_by("username").all()
-    return JsonResponse([User.serialize() for member in members], safe=False)
-
-
+# ---------------------------------------------------------------
+# Any user (logged in or not) can view the member's profile
+# This is activated by clicking on the member's name from the list in all posts.
+# The profile displays the number of followers, and followed by users.
+# All of the user's posts are displayed in reverse chronological order.
+# ---------------------------------------------------------------
 def single_profile(request, id):
+    # Creates the profile that the user sees when clicking on a user name.
     # Query for requested User
     try:
         member = User.objects.get(id=id)
@@ -140,6 +171,18 @@ def single_profile(request, id):
     # Return User contents
     if request.method == "GET":
         return JsonResponse(member.serialize())
+
+
+def single_feed(request, created_by):
+    # collects the data for the posts that were created by that user.
+    # since created by is a FK, I need to look up the User object by user name then filter by the user.
+    user = get_object_or_404(User, username=created_by)
+    posts = Post.objects.filter(created_by=user)
+    if posts:
+        posts = posts.order_by("create_date").all()
+        return JsonResponse([post.serialize() for post in posts], safe=False)
+    else:
+        return JsonResponse({"text": "You don't have any posts yet."})
 
 
 def single_post(request, id):
@@ -152,3 +195,25 @@ def single_post(request, id):
     # Return Post contents
     if request.method == "GET":
         return JsonResponse(post.serialize())
+
+
+def profiles(request):
+    # Pulls all users.
+    members = User.objects
+    members = User.order_by("username").all()
+    return JsonResponse([User.serialize() for member in members], safe=False)
+# ---------------------------------------------------------------
+# Logged in users (members) can choose to follow another member.
+# This will give the members a page/view where they can see a
+# list of posts limited to only the members that they follow.
+# A member can not follow themselves.
+# ---------------------------------------------------------------
+# FOLLOW - TODO
+
+# ---------------------------------------------------------------
+# Pagination:
+# Pagination should be deployed on any page displaying posts.
+# Limit is set to 10 posts with next/previous buttons when
+# the number of posts is greater than 10.
+# ---------------------------------------------------------------
+# Pagination - TODO
