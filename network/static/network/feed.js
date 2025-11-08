@@ -193,7 +193,12 @@ function format_profile(member) {
   show_profile_view()
   // variables
   s1 = member.username
-  s2 = s1.charAt(0).toUpperCase() + s1.slice(1)
+  s2 = s1.replace(/_/g, ' ')
+  s3 = s2.split(' ')
+  s4 = s3.map(item => {
+    return item.charAt(0).toUpperCase() + item.slice(1)
+  })
+  s5 = s4.join(' ')
 
   // populate the HTML
   document.getElementById('welcome-h').textContent = 'Writer Profile'
@@ -201,7 +206,7 @@ function format_profile(member) {
     "This is a public writer profile. Here, you can learn more about the author, explore their bio, and discover the posts they've shared with the community. Feel free to browse and get inspired by their work. To unlock full features like creating posts, liking content, and joining the conversation, consider signing in or becoming a member."
 
   document.getElementById('profile-img').src = member.profile_pic
-  document.getElementById('profile-name').textContent = s2
+  document.getElementById('profile-name').textContent = s5
   document.getElementById('start-date').textContent =
     'Member since ' + member.start_date
   document.getElementById('bio').textContent = member.bio
@@ -240,7 +245,9 @@ function format_single_post(post) {
 }
 
 // --------------------------- Like Functions -------------------------//
+
 function checkLikeStatus(id) {
+  // Updates the buttons when first rendered based on information in the db.
   fetch(`/api/check_like_status/${id}`)
     .then(response => response.json())
     .then(data => {
@@ -256,28 +263,46 @@ function checkLikeStatus(id) {
 }
 
 function get_post_for_likes() {
-  id = document.getElementById('like-me').data_id
+  // Called by listener when 'like-me' button is clicked
+  button = document.getElementById('like-me')
+  button.disabled = true
+  document.getElementById('unlike-me').disabled = false
+  id = button.data_id
   console.log('button data-id' + id)
-  fetch(`/api/update_likes/${id}`)
-  get_new_count()
+  fetch(`/api/update_likes/${id}`).then(get_new_count)
 }
 
 function get_post_for_unlikes() {
-  id = document.getElementById('unlike-me').data_id
-  fetch(`/api/update_unlikes/${id}`)
+  button = document.getElementById('unlike-me')
+  button.disabled = true
+  document.getElementById('like-me').disabled = false
+  id = button.data_id
+  fetch(`/api/update_unlikes/${id}`).then(toggle_likes).then(get_new_count)
 }
 
 function get_new_count() {
-  const id = document.getElementById('like-me').dataset.id
+  const id = document.getElementById('like-me').data_id
   fetch(`api/count_likes/${id}`)
     .then(response => response.json())
     .then(count => {
       document.getElementById('post-likes').textContent =
-        'Number of likes: ' + count
+        'Number of likes: ' + count.count
     })
 }
 
 // --------------------------- Helper Functions -------------------------//
+
+function toggle_likes() {
+  button = document.getElementById('like-me')
+  if ((button.disabled = true)) {
+    button.disabled = false
+    document.getElementById('unlike-me').disabled = true
+  } else {
+    button.disabled = true
+    document.getElementById('unlike-me').disabled = false
+  }
+}
+
 function show_all_posts_view() {
   document.querySelector('#welcome').style.display = 'block'
   document.querySelector('#all-posts').style.display = 'block'

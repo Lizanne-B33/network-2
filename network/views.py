@@ -114,17 +114,20 @@ def add_post(request):
 
 # EDIT TODO
 
-# Like toggle: any logged in user can like or unlike a post
-# LIKE TODO
+# ---------------------------------------------------------------
+# Like functionality: logged in user can like or unlike a post
+# ---------------------------------------------------------------
 
 
 def check_like_status(request, id):
+    # Used when form is first rendered
     post = Post.objects.get(id=id)
     liked = request.user in post.member_likes.all()
     return JsonResponse({'liked': liked})
 
 
 def update_likes(request, id):
+    # called from listener on the 'like-me button'
     print('update has been called')
     post = get_object_or_404(Post, id=id)
     print('Post ID' + str(id))
@@ -132,7 +135,6 @@ def update_likes(request, id):
     post.member_likes.add(request.user)
     post.save()
     post.like()
-    count_likes(id)
     return HttpResponseRedirect(reverse('index'))
 
 
@@ -141,13 +143,13 @@ def update_unlikes(request, id):
     post.member_likes.remove(request.user)
     post.save()
     post.unlike()
-    count_likes(id)
     return HttpResponseRedirect(reverse('index'))
 
 
 def count_likes(request, id):
+    print('count_likes is called')
     post = get_object_or_404(Post, id=id)
-    count = post.member_likes
+    count = post.likes
     return JsonResponse({'count': count})
 
 
