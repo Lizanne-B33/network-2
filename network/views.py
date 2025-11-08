@@ -289,7 +289,7 @@ def filtered_feed(request):
         "created_by", "create_date")
 
     # step 3: create the json
-    serialized_posts = [posts.serialize() for post in posts]
+    serialized_posts = [post.serialize() for post in posts]
 
     # step 4: Return the json
     return JsonResponse(serialized_posts, safe=False)

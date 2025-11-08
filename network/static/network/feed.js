@@ -85,6 +85,16 @@ function load_member_feed(memberName) {
       }
     })
 }
+function load_filtered_feed() {
+  //document.querySelector('#filtered_posts').innerHTML = ''
+  // Get Posts
+  fetch('/api/filtered_feed')
+    .then(response => response.json())
+    .then(posts => {
+      // send to format the list
+      format_feed(posts, '#filtered-posts')
+    })
+}
 function format_feed(posts, divStructure) {
   //console.log(divStructure)
   startDiv = document.querySelector(divStructure)
@@ -386,6 +396,7 @@ function show_all_posts_view() {
   document.querySelector('#profile-posts').style.display = 'none'
   document.querySelector('#single-post').style.display = 'none'
   document.querySelector('#member-posts').style.display = 'none'
+  document.querySelector('#filtered-posts').style.display = 'none'
 }
 function show_profile_view() {
   document.querySelector('#welcome').style.display = 'block'
@@ -395,6 +406,7 @@ function show_profile_view() {
   document.querySelector('#single-post').style.display = 'none'
   document.querySelector('#member-posts').style.display = 'none'
   document.querySelector('#follow-btns').style.display = 'block'
+  document.querySelector('#filtered-posts').style.display = 'none'
 }
 function show_single_post_view() {
   document.querySelector('#welcome').style.display = 'none'
@@ -403,6 +415,7 @@ function show_single_post_view() {
   document.querySelector('#profile').style.display = 'none'
   document.querySelector('#single-post').style.display = 'block'
   document.querySelector('#member-posts').style.display = 'none'
+  document.querySelector('#filtered-posts').style.display = 'none'
   if (!memberName) {
     document.querySelector('#like-btns').style.display = 'none'
   }
@@ -414,4 +427,18 @@ function show_member_post_view() {
   document.querySelector('#profile').style.display = 'none'
   document.querySelector('#single-post').style.display = 'none'
   document.querySelector('#member-posts').style.display = 'block'
+  document.querySelector('#filtered-posts').style.display = 'none'
+}
+function show_filtered_posts_view() {
+  console.log('the show filtered post is triggered. ')
+  load_filtered_feed()
+  console.log('filtered feed should have run ')
+  document.querySelector('#welcome').style.display = 'none'
+  document.querySelector('#all-posts').style.display = 'none'
+  document.querySelector('#profile-posts').style.display = 'none'
+  document.querySelector('#profile').style.display = 'none'
+  document.querySelector('#single-post').style.display = 'none'
+  document.querySelector('#member-posts').style.display = 'none'
+  document.querySelector('#follow-btns').style.display = 'none'
+  document.querySelector('#filtered-posts').style.display = 'block'
 }
