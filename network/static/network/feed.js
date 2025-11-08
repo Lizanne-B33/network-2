@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
 function activate_post_btn() {
   document.getElementById('add_post_btn').disabled = false
 }
-
 function load_feed() {
   //console.log(memberName)
   // variables
@@ -115,6 +114,7 @@ function format_feed(posts, divStructure) {
 
     if (author != my_author) {
       author = my_author
+      formatted_author = username_format(post.created_by)
       // create a div for author
       aDiv = document.createElement('div')
       startDiv.appendChild(aDiv)
@@ -127,9 +127,8 @@ function format_feed(posts, divStructure) {
 
       aHeading = document.createElement('h5')
       aCDiv.appendChild(aHeading)
-      s1 = post.created_by
-      s2 = s1.charAt(0).toUpperCase() + s1.slice(1)
-      aHeading.textContent = s2 + "'s Posts"
+
+      aHeading.textContent = formatted_author + "'s Posts"
 
       // add listener to view profile - Duck helped me with the closure.
       // I was getting the last author in all my listeners.
@@ -182,7 +181,6 @@ function format_feed(posts, divStructure) {
     })
   })
 }
-
 // --------------------------- Display Profile -------------------------//
 function load_profile(id) {
   // variables
@@ -197,6 +195,7 @@ function load_profile(id) {
 }
 function format_profile(member) {
   show_profile_view()
+
   checkFollowingStatus(member.id)
   checkMemberIsAuthor(member.id)
 
@@ -222,7 +221,6 @@ function format_profile(member) {
 
   load_single_feed(member.username)
 }
-
 // --------------------------- Display one Post -------------------------//
 function load_single_post(id) {
   // variables
@@ -234,7 +232,6 @@ function load_single_post(id) {
       format_single_post(post)
     })
 }
-
 function format_single_post(post) {
   show_single_post_view()
   checkLikeStatus(post.id)
@@ -251,9 +248,7 @@ function format_single_post(post) {
   document.getElementById('post-likes').textContent =
     'Number of likes: ' + post.likes
 }
-
 // --------------------------- Like Functions -------------------------//
-
 function checkLikeStatus(id) {
   // Updates the buttons when first rendered based on information in the db.
   fetch(`/api/check_like_status/${id}`)
@@ -269,7 +264,6 @@ function checkLikeStatus(id) {
     })
   console.log('end of fetch stmt checkLikeStatus')
 }
-
 function get_post_for_likes() {
   // Called by listener when 'like-me' button is clicked
   button = document.getElementById('like-me')
@@ -279,7 +273,6 @@ function get_post_for_likes() {
   console.log('button data-id' + id)
   fetch(`/api/update_likes/${id}`).then(get_new_count)
 }
-
 function get_post_for_unlikes() {
   button = document.getElementById('unlike-me')
   button.disabled = true
@@ -287,7 +280,6 @@ function get_post_for_unlikes() {
   id = button.data_id
   fetch(`/api/update_unlikes/${id}`).then(toggle_likes).then(get_new_count)
 }
-
 function get_new_count() {
   const id = document.getElementById('like-me').data_id
   fetch(`api/count_likes/${id}`)
@@ -307,7 +299,6 @@ function checkMemberIsAuthor(id) {
       }
     })
 }
-
 function checkFollowingStatus(id) {
   // Updates the buttons when first rendered based on information in the db.
   fetch(`/api/check_following_status/${id}`)
@@ -323,7 +314,6 @@ function checkFollowingStatus(id) {
     })
   console.log('end of fetch stmt checkFollowingStatus')
 }
-
 function get_user_to_follow() {
   // Called by listener when 'like-me' button is clicked
   button = document.getElementById('follow-me')
@@ -342,7 +332,6 @@ function get_user_to_unfollow() {
   console.log('button data-id' + id)
   fetch(`/api/update_unfollowing/${id}`).then(update_follow_data)
 }
-
 function update_follow_data() {
   id = document.getElementById('follow-me').data_id
   fetch(`/api/follow_counts/${id}`)
@@ -356,7 +345,6 @@ function update_follow_data() {
         'Followed by: ' + this_user_has_followers
     })
 }
-
 // --------------------------- Helper Functions -------------------------//
 function username_format(username) {
   s1 = username
@@ -368,7 +356,6 @@ function username_format(username) {
   s5 = s4.join(' ')
   return s5
 }
-
 function toggle_likes() {
   button = document.getElementById('like-me')
   if ((button.disabled = true)) {
@@ -389,7 +376,6 @@ function toggle_follow() {
     document.getElementById('follow-me').disabled = false
   }
 }
-
 function show_all_posts_view() {
   document.querySelector('#welcome').style.display = 'block'
   document.querySelector('#all-posts').style.display = 'block'
@@ -405,9 +391,7 @@ function show_profile_view() {
   document.querySelector('#profile').style.display = 'block'
   document.querySelector('#single-post').style.display = 'none'
   document.querySelector('#member-posts').style.display = 'none'
-  if (!memberName) {
-    document.querySelector('#follow-btns').style.display = 'none'
-  }
+  document.querySelector('#follow-btns').style.display = 'block'
 }
 function show_single_post_view() {
   document.querySelector('#welcome').style.display = 'none'
@@ -420,7 +404,6 @@ function show_single_post_view() {
     document.querySelector('#like-btns').style.display = 'none'
   }
 }
-
 function show_member_post_view() {
   document.querySelector('#welcome').style.display = 'block'
   document.querySelector('#all-posts').style.display = 'none'
