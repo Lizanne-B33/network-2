@@ -220,7 +220,8 @@ def profiles(request):
 # list of posts limited to only the members that they follow.
 # A member can not follow themselves.
 # ---------------------------------------------------------------
-# FOLLOW:
+
+# FOLLOW: Manage Buttons & functionality
 
 
 def check_member_is_author(request, id):
@@ -273,6 +274,26 @@ def follow_counts(request, id):
     this_member_is_following = this_member.count_following()
     this_member_has_followers = this_member.count_followers()
     return JsonResponse({'following': this_member_is_following, 'followers': this_member_has_followers})
+
+# FOLLOW: see posts from the folks that the user follows.
+
+
+def filtered_feed(request):
+    # step 1 get the users that are being followed.
+    followed_users = request.user.get_following()
+
+    # step 2: get the posts from those users.
+    # https://docs.djangoproject.com/en/5.2/ref/models/querysets/
+    # https://www.w3schools.com/django/django_queryset_filter.php
+    posts = Post.objects.filter(created_by__in=followed_users).order_by(
+        "created_by", "create_date")
+
+    # step 3: create the json
+    serialized_posts = [posts.serialize() for post in posts]
+
+    # step 4: Return the json
+    return JsonResponse(serialized_posts, safe=False)
+
 
 # ---------------------------------------------------------------
 # Pagination:

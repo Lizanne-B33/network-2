@@ -34,6 +34,8 @@ urlpatterns = [
          views.check_following_status, name="check_following_status"),
     path("api/follow_counts/<int:id>", views.follow_counts, name="follow_counts"),
 
+    path("api/filtered_feed", views.filtered_feed, name="filtered_feed"),
+
 ]
 # Image files
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

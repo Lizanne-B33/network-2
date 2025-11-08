@@ -345,6 +345,9 @@ function update_follow_data() {
         'Followed by: ' + this_user_has_followers
     })
 }
+function get_posts_followed_members() {
+  fetch
+}
 // --------------------------- Helper Functions -------------------------//
 function username_format(username) {
   s1 = username
