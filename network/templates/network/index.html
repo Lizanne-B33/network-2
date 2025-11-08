@@ -22,6 +22,17 @@
                         <div class="col-12">
                             <img id="profile-img" class="img-fluid mx-0 d-block" alt="profile image" />
                         </div>
+                        <div class="col-12 mx=5" id="follow-btns">
+                            <!-- https://home.unicode.org/ -->
+                            <button type="submit" class="follow-btn btn btn-default" id="follow-me" value="{{ user.id }}" disabled>
+                                &#x2795 &#x1F464 Follow
+                            </button>
+                            <button type="submit" class="follow-btn btn btn-default" id="unfollow-me" value="{{ user.id }}" disabled>
+                                &#x1F6AB &#x1F464 Unfollow
+                            </button>
+                            <br />
+                            <hr />
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-8">
@@ -33,11 +44,9 @@
                             <br />
                             <p id="bio"></p>
                             <br />
-                            <div class="row">
+                            <div class="row" id="follow-section">
                                 <div class="col-lg-4 following">
                                     <p id="following"></p>
-                                </div>
-                                <div class="col-lg-4 following">
                                     <p id="followed-by"></p>
                                 </div>
                             </div>

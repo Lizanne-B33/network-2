@@ -19,6 +19,13 @@ document.addEventListener('DOMContentLoaded', function () {
   document
     .getElementById('unlike-me')
     .addEventListener('click', get_post_for_unlikes)
+  // Listener for the followS buttons
+  document
+    .getElementById('follow-me')
+    .addEventListener('click', get_user_to_follow)
+  document
+    .getElementById('unfollow-me')
+    .addEventListener('click', get_user_to_unfollow)
 })
 
 // --------- New Posts
@@ -189,16 +196,12 @@ function load_profile(id) {
     })
 }
 function format_profile(member) {
-  // hide the posts view & show just single member profile
   show_profile_view()
+  checkFollowingStatus(member.id)
+  checkMemberIsAuthor(member.id)
+
   // variables
-  s1 = member.username
-  s2 = s1.replace(/_/g, ' ')
-  s3 = s2.split(' ')
-  s4 = s3.map(item => {
-    return item.charAt(0).toUpperCase() + item.slice(1)
-  })
-  s5 = s4.join(' ')
+  this_username = username_format(member.username)
 
   // populate the HTML
   document.getElementById('welcome-h').textContent = 'Writer Profile'
@@ -206,7 +209,7 @@ function format_profile(member) {
     "This is a public writer profile. Here, you can learn more about the author, explore their bio, and discover the posts they've shared with the community. Feel free to browse and get inspired by their work. To unlock full features like creating posts, liking content, and joining the conversation, consider signing in or becoming a member."
 
   document.getElementById('profile-img').src = member.profile_pic
-  document.getElementById('profile-name').textContent = s5
+  document.getElementById('profile-name').textContent = this_username
   document.getElementById('start-date').textContent =
     'Member since ' + member.start_date
   document.getElementById('bio').textContent = member.bio
@@ -214,6 +217,9 @@ function format_profile(member) {
     'Following: ' + member.followers
   document.getElementById('followed-by').textContent =
     'Followed by: ' + member.following
+  document.getElementById('follow-me').data_id = member.id
+  document.getElementById('unfollow-me').data_id = member.id
+
   load_single_feed(member.username)
 }
 
@@ -232,10 +238,12 @@ function load_single_post(id) {
 function format_single_post(post) {
   show_single_post_view()
   checkLikeStatus(post.id)
+  console.log(post.created_by)
+  this_username = username_format(post.created_by)
   document.getElementById('like-me').data_id = post.id
   document.getElementById('unlike-me').data_id = post.id
   document.getElementById('sender-img').src = post.profile_pic
-  document.getElementById('post-sender').textContent = post.created_by
+  document.getElementById('post-sender').textContent = this_username
   document.getElementById('post-date').textContent =
     'Originally posted on: ' + post.create_date
   document.getElementById('post-text').textContent = post.body
@@ -289,8 +297,77 @@ function get_new_count() {
         'Number of likes: ' + count.count
     })
 }
+// --------------------------- Follow Functions -------------------------//
+function checkMemberIsAuthor(id) {
+  fetch(`/api/check_member_is_author/${id}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.member_is_author) {
+        document.getElementById('follow-btns').style.display = 'none'
+      }
+    })
+}
+
+function checkFollowingStatus(id) {
+  // Updates the buttons when first rendered based on information in the db.
+  fetch(`/api/check_following_status/${id}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.following) {
+        document.getElementById('follow-me').disabled = true
+        document.getElementById('unfollow-me').disabled = false
+      } else {
+        document.getElementById('follow-me').disabled = false
+        document.getElementById('unfollow-me').disabled = true
+      }
+    })
+  console.log('end of fetch stmt checkFollowingStatus')
+}
+
+function get_user_to_follow() {
+  // Called by listener when 'like-me' button is clicked
+  button = document.getElementById('follow-me')
+  button.disabled = true
+  document.getElementById('unfollow-me').disabled = false
+  id = button.data_id
+  console.log('button data-id' + id)
+  fetch(`/api/update_following/${id}`).then(update_follow_data)
+}
+function get_user_to_unfollow() {
+  // Called by listener when 'like-me' button is clicked
+  button = document.getElementById('follow-me')
+  button.disabled = false
+  document.getElementById('unfollow-me').disabled = true
+  id = button.data_id
+  console.log('button data-id' + id)
+  fetch(`/api/update_unfollowing/${id}`).then(update_follow_data)
+}
+
+function update_follow_data() {
+  id = document.getElementById('follow-me').data_id
+  fetch(`/api/follow_counts/${id}`)
+    .then(response => response.json())
+    .then(data => {
+      this_user_is_following = data.following
+      this_user_has_followers = data.followers
+      document.getElementById('following').textContent =
+        'Following: ' + this_user_is_following
+      document.getElementById('followed-by').textContent =
+        'Followed by: ' + this_user_has_followers
+    })
+}
 
 // --------------------------- Helper Functions -------------------------//
+function username_format(username) {
+  s1 = username
+  s2 = s1.replace(/_/g, ' ')
+  s3 = s2.split(' ')
+  s4 = s3.map(item => {
+    return item.charAt(0).toUpperCase() + item.slice(1)
+  })
+  s5 = s4.join(' ')
+  return s5
+}
 
 function toggle_likes() {
   button = document.getElementById('like-me')
@@ -300,6 +377,16 @@ function toggle_likes() {
   } else {
     button.disabled = true
     document.getElementById('unlike-me').disabled = false
+  }
+}
+function toggle_follow() {
+  button = document.getElementById('follow-me')
+  if ((button.disabled = true)) {
+    button.disabled = false
+    document.getElementById('follow-me').disabled = true
+  } else {
+    button.disabled = true
+    document.getElementById('follow-me').disabled = false
   }
 }
 
@@ -318,6 +405,9 @@ function show_profile_view() {
   document.querySelector('#profile').style.display = 'block'
   document.querySelector('#single-post').style.display = 'none'
   document.querySelector('#member-posts').style.display = 'none'
+  if (!memberName) {
+    document.querySelector('#follow-btns').style.display = 'none'
+  }
 }
 function show_single_post_view() {
   document.querySelector('#welcome').style.display = 'none'
@@ -326,6 +416,9 @@ function show_single_post_view() {
   document.querySelector('#profile').style.display = 'none'
   document.querySelector('#single-post').style.display = 'block'
   document.querySelector('#member-posts').style.display = 'none'
+  if (!memberName) {
+    document.querySelector('#like-btns').style.display = 'none'
+  }
 }
 
 function show_member_post_view() {

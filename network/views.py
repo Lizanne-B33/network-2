@@ -92,7 +92,6 @@ def add_post(request):
         # Bind user input to the form
         form = PostForm(request.POST)
         # Server-side Validation
-        print(request.FILES)
         if form.is_valid():
             my_title = form.cleaned_data['title']
             my_body = form.cleaned_data['body']
@@ -120,18 +119,16 @@ def add_post(request):
 
 
 def check_like_status(request, id):
-    # Used when form is first rendered
+    # Used when form is first rendered to set the buttons.
     post = Post.objects.get(id=id)
     liked = request.user in post.member_likes.all()
     return JsonResponse({'liked': liked})
 
 
 def update_likes(request, id):
-    # called from listener on the 'like-me button'
-    print('update has been called')
+    # Gets the post object and adds the M2M value for this user.
+    # Also calls the model function to update the count of likes for this post.
     post = get_object_or_404(Post, id=id)
-    print('Post ID' + str(id))
-    print('user ID' + str(request.user))
     post.member_likes.add(request.user)
     post.save()
     post.like()
@@ -139,6 +136,8 @@ def update_likes(request, id):
 
 
 def update_unlikes(request, id):
+    # Gets the post object and removes the M2M value for this user.
+    # Also calls the model function to update the count of likes for this post.
     post = get_object_or_404(Post, id=id)
     post.member_likes.remove(request.user)
     post.save()
@@ -147,7 +146,7 @@ def update_unlikes(request, id):
 
 
 def count_likes(request, id):
-    print('count_likes is called')
+    # Gets the count from the DB and sends to the JS to update the page
     post = get_object_or_404(Post, id=id)
     count = post.likes
     return JsonResponse({'count': count})
@@ -221,7 +220,59 @@ def profiles(request):
 # list of posts limited to only the members that they follow.
 # A member can not follow themselves.
 # ---------------------------------------------------------------
-# FOLLOW - TODO
+# FOLLOW:
+
+
+def check_member_is_author(request, id):
+    member = request.user
+    author = User.objects.get(id=id)
+    member_is_author = False
+    if (member.id == author.id):
+        member_is_author = True
+    return JsonResponse({"member_is_author": member_is_author})
+
+
+def check_following_status(request, id):
+    # Used when form is first rendered to set the buttons.
+    user = User.objects.get(id=id)
+    following = request.user in user.following.all()
+    return JsonResponse({'following': following})
+
+
+def update_following(request, id):
+    # Gets the User object and adds the M2M value for this user.
+    member = get_object_or_404(User, id=id)
+    member.followed_by.add(request.user)
+    member.save()
+
+    # Update the following:
+    this_user = get_object_or_404(User, id=request.user.id)
+    this_user.following.add(member)
+    this_user.save()
+
+    return HttpResponseRedirect(reverse('index'))
+
+
+def update_unfollowing(request, id):
+    # Gets the user object and adds the M2M value for this user.
+    # Also calls the model function to update the count of likes for this post.
+    member = get_object_or_404(User, id=id)
+    member.followed_by.remove(request.user)
+    member.save()
+
+    # Update the following:
+    this_user = get_object_or_404(User, id=request.user.id)
+    this_user.following.remove(member)
+    this_user.save()
+    return HttpResponseRedirect(reverse('index'))
+
+
+def follow_counts(request, id):
+    # Gets the count from the DB and sends to the JS to update the page
+    this_member = get_object_or_404(User, id=id)
+    this_member_is_following = this_member.count_following()
+    this_member_has_followers = this_member.count_followers()
+    return JsonResponse({'following': this_member_is_following, 'followers': this_member_has_followers})
 
 # ---------------------------------------------------------------
 # Pagination:

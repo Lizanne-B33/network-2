@@ -24,6 +24,15 @@ urlpatterns = [
     path("api/update_unlikes/<int:id>",
          views.update_unlikes, name="update_unlikes"),
     path("api/count_likes/<int:id>", views.count_likes, name="count_likes"),
+    path("api/update_following/<int:id>",
+         views.update_following, name="update_following"),
+    path("api/update_unfollowing/<int:id>",
+         views.update_unfollowing, name="update_unfollowing"),
+    path("api/check_member_is_author/<int:id>",
+         views.check_member_is_author, name="check_member_is_author"),
+    path("api/check_following_status/<int:id>",
+         views.check_following_status, name="check_following_status"),
+    path("api/follow_counts/<int:id>", views.follow_counts, name="follow_counts"),
 
 ]
 # Image files
