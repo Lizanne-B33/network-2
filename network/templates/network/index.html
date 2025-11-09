@@ -58,7 +58,7 @@
         </div>
         <div id="member-posts">
             <!--used to hide or show sections-->
-            <h4>Add a Post</h4>
+            <h4 id="create_edit_post"></h4>
             <div class="row">
                 <div class="col-lg-6">
                     <form action="{% url 'add_post' %}" method="POST" enctype="multipart/form-data" class="flex-form">
@@ -119,8 +119,23 @@
                                 &#x1F494 UnLike
                             </button>
                         </div>
-                        <div class="col-8 mt-1">
+                        <div class="col-4 mt-1">
                             <p id="post-likes"></p>
+                        </div>
+                        <div id="edit_my_post" class="col-4 mt-1">
+                            <button id="edit-post-button">Edit Post</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!--edit-->
+                        <div id="edit_post" class="col-12">
+                            <form id="edit-post-form" method="POST">
+                                <div class="form-group">
+                                    {% csrf_token %}
+                                    {{ formEdit.body }}
+                                    <button type="submit" id="edit_post_btn">Save Post</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -135,4 +150,5 @@
     <!-- Using this to pass the username from the login view to the index.html.
     This was found with help from the duck. apparently I'm using Jinja -->
     <script> const memberName = "{{ memberName }}";</script>
+    <script> const postId = "{{ post.id }}";</script>
 {% endblock script %}

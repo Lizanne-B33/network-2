@@ -2,12 +2,13 @@ import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import render_to_string
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse, HttpResponseRedirect, render, redirect, get_object_or_404
 from django.urls import reverse
 from .models import User, Post
-from .forms import (PostForm)
+from .forms import PostForm, EditForm
 
 # ---------------------------------------------
 # User Login/Logout Functions
@@ -104,14 +105,54 @@ def add_post(request):
             return HttpResponseRedirect(reverse('index'))
     else:
         form = PostForm()
-        print(form)
     return render(request, "network/index.html", {'form': form})
 
 # Edit Post: uses an Edit Button that is only displayed if the
 # Member is viewing their own post.  This edit button enables
 # the member to modify and save their own post.
 
-# EDIT TODO
+# EDIT
+
+
+def display_edit(request, id):
+    try:
+        post = get_object_or_404(Post, id=id)
+
+        if request.method == 'POST':
+            form = EditForm(request.POST)
+            if form.is_valid():
+                post.body = form.cleaned_data['body']
+                post.save()
+                return JsonResponse({
+                    'message': 'Post updated',
+                    'updated_post': {
+                        'id': post.id,
+                        'body': post.body
+                    }
+                })
+            return JsonResponse({'errors': form.errors}, status=400)
+
+        # For GET: render the form with initial data
+        form_html = render_to_string('network/partials/edit_form.html', {
+            'formEdit': EditForm(initial={'body': post.body}),
+            'post': post
+        }, request=request)
+        return JsonResponse({'form_html': form_html})
+
+    except Exception as e:
+        print('Error in display_edit:', e)
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+def check_member_profile_is_member(request, id):
+    profile_is_member = False
+    if request.user.is_authenticated:
+        member = request.user
+        profile = Post.objects.get(id=id)
+        profile_is_member = False
+        if (member.id == profile.id):
+            profile_is_member = True
+    return JsonResponse({"profile_is_member": profile_is_member})
 
 # ---------------------------------------------------------------
 # Like functionality: logged in user can like or unlike a post

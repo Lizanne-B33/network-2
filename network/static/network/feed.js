@@ -1,32 +1,45 @@
-// Global Variables
+if (
+  window.location.pathname !== '/login' &&
+  window.location.pathname !== '/register'
+) {
+  document.addEventListener('DOMContentLoaded', function () {
+    load_feed()
+    //console.log(memberName)
+    if (memberName) {
+      console.log(memberName)
+      formatted_username = username_format(memberName)
+      console.log(formatted_username)
+      document.getElementById('nav_username').innerHTML =
+        '<strong>' + formatted_username + '</strong>'
+      load_member_feed(memberName)
+    }
+    // Listener for adding posts.  Triggers the submit button to disabled=true when the user inputs.
+    const bodyElement = document.getElementById('id_body')
+    if (bodyElement) {
+      bodyElement.addEventListener('input', activate_post_btn)
+    }
 
-document.addEventListener('DOMContentLoaded', function () {
-  load_feed()
-  //console.log(memberName)
-  if (memberName) {
-    load_member_feed(memberName)
-  }
-  // Listener for adding posts.  Triggers the submit button to disabled=true when the user inputs.
-  const bodyElement = document.getElementById('id_body')
-  if (bodyElement) {
-    bodyElement.addEventListener('input', activate_post_btn)
-  }
+    // Listener for the like buttons
+    document
+      .getElementById('like-me')
+      .addEventListener('click', get_post_for_likes)
+    document
+      .getElementById('unlike-me')
+      .addEventListener('click', get_post_for_unlikes)
+    // Listener for the followS buttons
+    document
+      .getElementById('follow-me')
+      .addEventListener('click', get_user_to_follow)
+    document
+      .getElementById('unfollow-me')
+      .addEventListener('click', get_user_to_unfollow)
 
-  // Listener for the like buttons
-  document
-    .getElementById('like-me')
-    .addEventListener('click', get_post_for_likes)
-  document
-    .getElementById('unlike-me')
-    .addEventListener('click', get_post_for_unlikes)
-  // Listener for the followS buttons
-  document
-    .getElementById('follow-me')
-    .addEventListener('click', get_user_to_follow)
-  document
-    .getElementById('unfollow-me')
-    .addEventListener('click', get_user_to_unfollow)
-})
+    // Edit Button
+    document
+      .getElementById('edit-post-button')
+      .addEventListener('click', edit_my_post)
+  })
+}
 
 // --------- New Posts
 // Add Post: Enables the submit button when the there is input in the form.
@@ -73,7 +86,7 @@ function load_member_feed(memberName) {
   if (bodyElement) {
     bodyElement.addEventListener('input', activate_post_btn)
   }
-
+  document.getElementById('create_edit_post').textContent = 'Create Post'
   fetch(`/api/single_feed/${username}`)
     .then(response => response.json())
     .then(posts => {
@@ -191,6 +204,56 @@ function format_feed(posts, divStructure) {
     })
   })
 }
+// --------------------------- Edit Posts -------------------------//
+function edit_my_post() {
+  const id = document.getElementById('like-me').getAttribute('data_id')
+  console.log('from the button - ID: ', id)
+  const fetchPath = '/api/display_edit/' + id
+  console.log('fetchPath', fetchPath)
+  fetch(fetchPath)
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => {
+          console.error('Server error:', text)
+          throw new Error('Server returned an error page')
+        })
+      }
+      return response.json()
+    })
+    .then(data => {
+      document.getElementById('edit_post').innerHTML = data.form_html
+      const form = document.getElementById('edit-post-form')
+      form.addEventListener('submit', function (e) {
+        e.preventDefault()
+        submit_edit_form(form, id)
+      })
+    })
+    .catch(error => console.error('Fetch error:', error))
+}
+
+function submit_edit_form(form, id) {
+  const formData = new FormData(form)
+
+  fetch('/api/display_edit/' + id, {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+    },
+    body: formData,
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.updated_post) {
+        document.getElementById('post-text').textContent =
+          data.updated_post.body
+        document.getElementById('edit_post').innerHTML = '' // Clear form
+      } else {
+        console.error('Validation errors:', data.errors)
+      }
+    })
+    .catch(error => console.error('Submission error:', error))
+}
 // --------------------------- Display Profile -------------------------//
 function load_profile(id) {
   // variables
@@ -205,7 +268,6 @@ function load_profile(id) {
 }
 function format_profile(member) {
   show_profile_view()
-
   checkFollowingStatus(member.id)
   checkMemberIsAuthor(member.id)
 
@@ -231,6 +293,21 @@ function format_profile(member) {
 
   load_single_feed(member.username)
 }
+
+function check_profile_owner(id) {
+  console.log('checking if the profile is owned: ' + id)
+  fetch(`/api/check_member_profile_is_member/${id}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log('info from fetch', data)
+      if (data.profile_is_member) {
+        document.getElementById('edit_my_post').style.display = 'block'
+      } else {
+        document.getElementById('edit_my_post').style.display = 'none'
+      }
+    })
+}
+
 // --------------------------- Display one Post -------------------------//
 function load_single_post(id) {
   // variables
@@ -245,10 +322,11 @@ function load_single_post(id) {
 function format_single_post(post) {
   show_single_post_view()
   checkLikeStatus(post.id)
-  console.log(post.created_by)
+  check_profile_owner(post.created_by_id)
+  console.log('post created by - from load single post ' + post.created_by)
   this_username = username_format(post.created_by)
-  document.getElementById('like-me').data_id = post.id
-  document.getElementById('unlike-me').data_id = post.id
+  document.getElementById('like-me').setAttribute('data_id', post.id)
+  document.getElementById('unlike-me').setAttribute('data_id', post.id)
   document.getElementById('sender-img').src = post.profile_pic
   document.getElementById('post-sender').textContent = this_username
   document.getElementById('post-date').textContent =
@@ -355,10 +433,9 @@ function update_follow_data() {
         'Followed by: ' + this_user_has_followers
     })
 }
-function get_posts_followed_members() {
-  fetch
-}
+
 // --------------------------- Helper Functions -------------------------//
+
 function username_format(username) {
   s1 = username
   s2 = s1.replace(/_/g, ' ')

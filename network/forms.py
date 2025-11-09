@@ -33,3 +33,16 @@ class PostForm(forms.ModelForm):
 # ------------------------------------
 # Forms
 # ------------------------------------
+
+
+class EditForm(forms.Form):
+    body = forms.CharField(
+        label='Edit your post',
+        widget=forms.Textarea(attrs={
+            'rows': 4,
+            'cols': 40,
+            'class': 'form-control',
+            'placeholder': 'Update your post here...'
+        }),
+        max_length=1000
+    )
