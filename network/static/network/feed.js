@@ -1,9 +1,12 @@
+// Global variables
+let page = 1
+
 if (
   window.location.pathname !== '/login' &&
   window.location.pathname !== '/register'
 ) {
   document.addEventListener('DOMContentLoaded', function () {
-    load_feed()
+    load_feed(0)
     //console.log(memberName)
     if (memberName) {
       console.log(memberName)
@@ -38,6 +41,19 @@ if (
     document
       .getElementById('edit-post-button')
       .addEventListener('click', edit_my_post)
+
+    // Pagination Buttons
+    document.getElementById('next_btn').addEventListener('click', function () {
+      load_feed(1)
+    })
+
+    document
+      .getElementById('previous_btn')
+      .addEventListener('click', function () {
+        if (page > 1) {
+          load_feed(-1)
+        }
+      })
   })
 }
 
@@ -46,19 +62,26 @@ if (
 function activate_post_btn() {
   document.getElementById('add_post_btn').disabled = false
 }
-function load_feed() {
-  //console.log(memberName)
-  // variables
+
+function load_feed(direction) {
+  console.log('direction is ' + direction)
+  console.log('page before increment: ' + page)
+  // track page
+  page = page + direction
+  console.log('page after increment: ' + page)
   // set views
   show_all_posts_view()
+  // clears the posts from previous page.
+  document.getElementById('all-posts').innerHTML = '' // Clear old posts
   // Get Posts
-  fetch('/api/feed')
+  fetch(`/api/feed/${page}`)
     .then(response => response.json())
     .then(posts => {
       // send to format the list
       format_feed(posts, '#all-posts')
     })
 }
+
 function load_single_feed(username) {
   // variables
   // Clear the div so I don't get duplicates
@@ -99,7 +122,7 @@ function load_member_feed(memberName) {
     })
 }
 function load_filtered_feed() {
-  //document.querySelector('#filtered_posts').innerHTML = ''
+  document.querySelector('#filtered_posts').innerHTML = ''
   // Get Posts
   fetch('/api/filtered_feed')
     .then(response => response.json())
@@ -448,7 +471,7 @@ function username_format(username) {
 }
 function toggle_likes() {
   button = document.getElementById('like-me')
-  if ((button.disabled = true)) {
+  if (button.disabled === true) {
     button.disabled = false
     document.getElementById('unlike-me').disabled = true
   } else {
@@ -474,6 +497,7 @@ function show_all_posts_view() {
   document.querySelector('#single-post').style.display = 'none'
   document.querySelector('#member-posts').style.display = 'none'
   document.querySelector('#filtered-posts').style.display = 'none'
+  document.querySelector('#pagination').style.display = 'block'
 }
 function show_profile_view() {
   document.querySelector('#welcome').style.display = 'block'
@@ -484,6 +508,11 @@ function show_profile_view() {
   document.querySelector('#member-posts').style.display = 'none'
   document.querySelector('#follow-btns').style.display = 'block'
   document.querySelector('#filtered-posts').style.display = 'none'
+  document.querySelector('#pagination').style.display = 'none'
+  if (!memberName) {
+    document.querySelector('#follow-btns').style.display = 'none'
+    document.querySelector('#add_post_btn').style.display = 'none'
+  }
 }
 function show_single_post_view() {
   document.querySelector('#welcome').style.display = 'none'
@@ -496,6 +525,7 @@ function show_single_post_view() {
   if (!memberName) {
     document.querySelector('#like-btns').style.display = 'none'
   }
+  document.querySelector('#pagination').style.display = 'none'
 }
 function show_member_post_view() {
   document.querySelector('#welcome').style.display = 'block'
@@ -505,11 +535,10 @@ function show_member_post_view() {
   document.querySelector('#single-post').style.display = 'none'
   document.querySelector('#member-posts').style.display = 'block'
   document.querySelector('#filtered-posts').style.display = 'none'
+  document.querySelector('#pagination').style.display = 'none'
 }
 function show_filtered_posts_view() {
-  console.log('the show filtered post is triggered. ')
   load_filtered_feed()
-  console.log('filtered feed should have run ')
   document.querySelector('#welcome').style.display = 'none'
   document.querySelector('#all-posts').style.display = 'none'
   document.querySelector('#profile-posts').style.display = 'none'
@@ -518,4 +547,5 @@ function show_filtered_posts_view() {
   document.querySelector('#member-posts').style.display = 'none'
   document.querySelector('#follow-btns').style.display = 'none'
   document.querySelector('#filtered-posts').style.display = 'block'
+  document.querySelector('#pagination').style.display = 'none'
 }
